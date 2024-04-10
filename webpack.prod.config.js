@@ -13,7 +13,7 @@ var commonConfig = require('./webpack.common.config.js');
 var optimizedConfig = Merge.smart(commonConfig, {
     web: {
         output: {
-            filename: '[name].[chunkhash].js'
+            filename: '[name].js'
         },
         devtool: false,
         plugins: [
