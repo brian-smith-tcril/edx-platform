@@ -40,7 +40,7 @@ django-simple-history==3.4.0
 pymongo<4.0.0
 
 # greater version has breaking changes and requires some migration steps.
-django-webpack-loader==0.7.0
+django-webpack-loader==3.1.0
 
 # At the time of writing this comment, we do not know whether py2neo>=2022
 # will support our currently-deployed Neo4j version (3.5).
