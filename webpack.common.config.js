@@ -216,18 +216,36 @@ module.exports = Merge.smart({
                 {
                     test: path.resolve(__dirname, 'common/static/js/src/ajax_prefix.js'),
                     use: [
-                        'babel-loader',
-                        {
-                            loader: 'exports-loader',
-                            options: {
-                                'this.AjaxPrefix': true
-                            }
-                        }
+                        'babel-loader'
                     ]
                 },
                 {
                     test: /\.underscore$/,
                     use: 'raw-loader'
+                },
+                {
+                    // This file is used by both RequireJS and Webpack and depends on window globals
+                    // This is a dirty hack and shouldn't be replicated for other files.
+                    test: path.resolve(__dirname, 'cms/static/cms/js/main.js'),
+                    loader: 'string-replace-loader',
+                    options: {
+                        multiple: [
+                            { search: /\(function\(AjaxPrefix\) {/, replace: '' },
+                            {
+                                search: /], function\(domReady, \$, str, Backbone, gettext, NotificationView\) {/,
+                                replace: '], function(domReady, $, str, Backbone, gettext, NotificationView, AjaxPrefix) {'
+                            },
+                            {
+                                search: /'..\/..\/common\/js\/components\/views\/feedback_notification',/,
+                                replace: "'../../common/js/components/views/feedback_notification','AjaxPrefix',"
+                            },
+                            { search: /}\).call\(this, AjaxPrefix\);/, replace: '' },
+                            {
+                                search: /'..\/..\/common\/js\/components\/views\/feedback_notification',/,
+                                replace: "'../../common/js/components/views/feedback_notification','AjaxPrefix',"
+                            }
+                        ]
+                    }
                 },
                 {
                     test: /\.(woff2?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
@@ -242,7 +260,10 @@ module.exports = Merge.smart({
                     use: [
                         {
                             loader: 'exports-loader',
-                            options: { exports: 'window.XBlock' }
+                            options: {
+                                type: "commonjs",
+                                exports: 'single window.XBlock'
+                            }
                         },
                         {
                             loader: 'imports-loader',
@@ -261,7 +282,10 @@ module.exports = Merge.smart({
                     use: [
                         {
                             loader: 'exports-loader',
-                            options: { exports: 'window.XBlock' }
+                            options: {
+                                type: "commonjs",
+                                exports: 'single window.XBlock'
+                            }
                         },
                         {
                             loader: 'imports-loader',
@@ -510,7 +534,10 @@ module.exports = Merge.smart({
                     use: [
                         {
                             loader: 'exports-loader',
-                            options: { exports: 'window.CodeMirror' }
+                            options: {
+                                type: "commonjs",
+                                exports: 'single window.CodeMirror'
+                            }
                         }
                     ]
                 },
@@ -528,7 +555,10 @@ module.exports = Merge.smart({
                     use: [
                         {
                             loader: 'exports-loader',
-                            options: { exports: 'window.XModule' }
+                            options: {
+                                type: "commonjs",
+                                exports: 'single window.XModule'
+                            }
                         },
                         {
                             loader: 'imports-loader',
@@ -548,13 +578,7 @@ module.exports = Merge.smart({
                 {
                     test: /d3.min/,
                     use: [
-                        'babel-loader',
-                        {
-                            loader: 'exports-loader',
-                            options: {
-                                d3: true
-                            }
-                        }
+                        'babel-loader'
                     ]
                 },
                 {
@@ -642,20 +666,9 @@ module.exports = Merge.smart({
                 'node_modules',
                 'common/static/xmodule'
             ],
-
-            // We used to have node: { fs: 'empty' } in this file,
-            // that is no longer supported. Adding this based on the recommendation in
-            // https://stackoverflow.com/questions/64361940/webpack-error-configuration-node-has-an-unknown-property-fs
-            // 
-            // With this uncommented tests fail
-            // Tests failed in the following suites:
-            // * lms javascript
-            // * xmodule-webpack javascript
-            // Error: define cannot be used indirect
-            // 
-            // fallback: {
-            //     fs: false
-            // }
+            fallback: {
+                fs: false
+            }
         },
 
         resolveLoader: {

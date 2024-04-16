@@ -30,6 +30,15 @@ var optimizedConfig = Merge.smart(commonConfig, {
             minimizer: [
                 new TerserPlugin(),
             ],
+            splitChunks: {
+                cacheGroups: {
+                    commons: {
+                        name: 'commons',
+                        filename: 'commons.[chunkhash].js',
+                        minChunks: 3
+                    }
+                }
+            }
         }
     }
 });
@@ -51,6 +60,17 @@ var requireCompatConfig = Merge.smart(optimizedConfig, {
     web: {
         output: {
             filename: '[name].js'
+        },
+        optimization: {
+            splitChunks: {
+                cacheGroups: {
+                    commons: {
+                        name: 'commons',
+                        filename: 'commons.js',
+                        minChunks: 3
+                    }
+                }
+            }
         }
     }
 });
