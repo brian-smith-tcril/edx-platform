@@ -297,6 +297,7 @@ class MFEConfigTestCase(APITestCase):
         # Value in original MFE_CONFIG not overridden by catalog config should be preserved
         self.assertEqual(data["PRESERVED_SETTING"], "preserved")  # noqa: PT009
 
+    @override_settings(HELP_TOKENS_VERSION="latest")
     @patch("lms.djangoapps.mfe_config_api.views.configuration_helpers")
     def test_legacy_overrides_instructor_dashboard(self, configuration_helpers_mock):
         """Legacy help-tokens SUPPORT_URL is included for instructor-dashboard when no explicit override is set."""
@@ -769,6 +770,7 @@ class FrontendSiteConfigTestCase(APITestCase):
         brand_new = apps_by_id["org.openedx.frontend.app.brand.new"]["config"]
         self.assertEqual(brand_new["BRAND_NEW_KEY"], "value")  # noqa: PT009
 
+    @override_settings(HELP_TOKENS_VERSION="latest")
     @patch("lms.djangoapps.mfe_config_api.views.configuration_helpers")
     def test_legacy_overrides_instructor_dashboard_support_url(self, configuration_helpers_mock):
         """Instructor dashboard gets SUPPORT_URL from help-tokens when no explicit override is set."""
